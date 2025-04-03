@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToT Program Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 30px;
+            background-color: #3474eb;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .dashboard-header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .dashboard-summary {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -10px;
+            justify-content: space-between;
+        }
+        .dashboard-card {
+            flex: 1 1 300px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-card h3 {
+            margin-top: 0;
+            color: #3474eb;
+            font-size: 18px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .metric-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .metric-card {
+            flex: 1 1 110px;
+            background-color: #f8faff;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 5px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .metric-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #3474eb;
+        }
+        .metric-card .label {
+            font-size: 12px;
+            color: #666;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            margin-top: 15px;
+        }
+        .trend-indicator {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 5px;
+            font-weight: normal;
+        }
+        .trend-up {
+            background-color: #e6f7ed;
+            color: #0a6e31;
+        }
+        .trend-down {
+            background-color: #fdeded;
+            color: #d9534f;
+        }
+        .trend-neutral {
+            background-color: #f0f0f0;
+            color: #6c757d;
+        }
+        .key-finding {
+            background-color: #f8faff;
+            border-left: 4px solid #3474eb;
+            padding: 10px 15px;
+            margin: 10px 0;
+        }
+        .conflict-impact {
+            color: #d9534f;
+        }
+        .recommendation {
+            background-color: #e6f7ed;
+            border-left: 4px solid #0a6e31;
+            padding: 10px 15px;
+            margin: 10px 0;
+        }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
+            font-size: 12px;
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: 5px;
+        }
+        .region-pill {
+            display: inline-block;
+            background-color: #f0f0f0;
+            border-radius: 20px;
+            padding: 3px 10px;
+            margin: 2px;
+            font-size: 12px;
+        }
+        .conflict-region {
+            background-color: #fdeded;
+            color: #d9534f;
+        }
+        .non-conflict-region {
+            background-color: #e6f7ed;
+            color: #0a6e31;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-row {
+                flex-direction: column;
+            }
+            .dashboard-card {
+                flex: 1 1 100%;
+            }
+            .chart-container {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Training of Trainers (ToT) Program: Performance Dashboard</h1>
+            <p>Analysis of attendance, homework completion, and impact of regional conflicts</p>
+        </div>
+        
+        <div class="dashboard-summary">
+            <h2>Executive Summary</h2>
+            <p>This dashboard presents key findings from the Training of Trainers program analysis. Initial engagement was strong (81% attendance) but declined significantly by mid-program (42%). Participants from conflict-affected regions faced unique challenges, with 15-40% lower attendance rates.</p>
+            
+            <div class="metric-row">
+                <div class="metric-card">
+                    <div class="value">61%</div>
+                    <div class="label">Average Attendance</div>
+                </div>
+                <div class="metric-card">
+                    <div class="value">54%</div>
+                    <div class="label">Homework Completion</div>
+                </div>
+                <div class="metric-card">
+                    <div class="value">62.4</div>
+                    <div class="label">Avg. Session Minutes</div>
+                </div>
+                <div class="metric-card">
+                    <div class="value">31</div>
+                    <div class="label">Total Participants</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-row">
+            <div class="dashboard-card">
+                <h3>Attendance Trends</h3>
+                <div class="chart-container">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+                <div class="key-finding">
+                    High initial participation (81%) dropped significantly by 1st Revision (42%), with slight recovery to 58% by the final session.
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <h3>Homework Completion Trends</h3>
+                <div class="chart-container">
+                    <canvas id="homeworkChart"></canvas>
+                </div>
+                <div class="key-finding">
+                    Consistent decline in homework completion from 61% (1st) to 45% (3rd), indicating increasing disengagement.
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-row">
+            <div class="dashboard-card">
+                <h3>Regional Representation</h3>
+                <div class="chart-container">
+                    <canvas id="regionChart"></canvas>
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <span class="region-pill conflict-region">Conflict Region</span>
+                    <span class="region-pill non-conflict-region">Non-Conflict Region</span>
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <h3>Impact of Regional Conflicts</h3>
+                <div class="chart-container">
+                    <canvas id="conflictImpactChart"></canvas>
+                </div>
+                <div class="key-finding conflict-impact">
+                    Participants from conflict zones had 15-40% lower attendance and 25-50% lower homework completion rates.
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-row">
+            <div class="dashboard-card">
+                <h3>Gender Representation</h3>
+                <div class="chart-container">
+                    <canvas id="genderChart"></canvas>
+                </div>
+                <div class="key-finding">
+                    15 male and 12 female participants, indicating relatively balanced gender representation.
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <h3>Key Recommendations</h3>
+                <div class="recommendation">
+                    <strong>Flexible Scheduling:</strong> Implement asynchronous learning options and flexible deadlines for conflict regions.
+                </div>
+                <div class="recommendation">
+                    <strong>Offline Resources:</strong> Provide downloadable materials and reduced-bandwidth options for areas with connectivity issues.
+                </div>
+                <div class="recommendation">
+                    <strong>Feedback System:</strong> Implement regular feedback collection to identify challenges early.
+                </div>
+                <div class="recommendation">
+                    <strong>Targeted Support:</strong> Develop region-specific support strategies for conflict-affected participants.
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-row">
+            <div class="dashboard-card">
+                <h3>Performance Gaps</h3>
+                <div class="chart-container">
+                    <canvas id="gapChart"></canvas>
+                </div>
+                <div class="key-finding">
+                    Current performance is 19-21% below target KPIs for both attendance and homework completion.
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <h3>Session Duration Analysis</h3>
+                <div class="chart-container">
+                    <canvas id="durationChart"></canvas>
+                </div>
+                <div class="key-finding">
+                    Significant variability in session duration (1-138 minutes) indicates potential inconsistencies in session delivery or tracking.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Attendance Trend Chart
+        const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+        const attendanceChart = new Chart(attendanceCtx, {
+            type: 'line',
+            data: {
+                labels: ['Opening', 'Session 1', 'Session 3', '1st Revision', '2nd Revision', 'Final'],
+                datasets: [{
+                    label: 'Attendance (%)',
+                    data: [81, 81, 52, 42, 45, 58],
+                    borderColor: '#3474eb',
+                    backgroundColor: 'rgba(52, 116, 235, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.2,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return Attendance: ${context.raw}%;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Attendance Rate (%)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Homework Completion Chart
+        const homeworkCtx = document.getElementById('homeworkChart').getContext('2d');
+        const homeworkChart = new Chart(homeworkCtx, {
+            type: 'bar',
+            data: {
+                labels: ['1st Assignment', '2nd Assignment', '3rd Assignment'],
+                datasets: [{
+                    label: 'Completion Rate (%)',
+                    data: [61, 55, 45],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(75, 192, 192, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Completion Rate (%)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Regional Representation Chart
+        const regionCtx = document.getElementById('regionChart').getContext('2d');
+        const regionChart = new Chart(regionCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Libya', 'Iraq', 'Tunisia', 'Jordan', 'Morocco', 'Sudan', 'Yemen'],
+                datasets: [{
+                    data: [7, 7, 5, 4, 3, 3, 2],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(199, 199, 199, 0.7)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return ${label}: ${value} participants (${percentage}%);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Conflict Impact Chart
+        const conflictImpactCtx = document.getElementById('conflictImpactChart').getContext('2d');
+        const conflictImpactChart = new Chart(conflictImpactCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Attendance', 'Homework Completion'],
+                datasets: [
+                    {
+                        label: 'Non-Conflict Regions',
+                        data: [70, 65],
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Conflict Regions',
+                        data: [45, 35],
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Rate (%)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gender Representation Chart
+        const genderCtx = document.getElementById('genderChart').getContext('2d');
+        const genderChart = new Chart(genderCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Male', 'Female', 'Unreported'],
+                datasets: [{
+                    data: [15, 12, 4],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(200, 200, 200, 0.7)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return ${label}: ${value} participants (${percentage}%);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Performance Gap Chart
+        const gapCtx = document.getElementById('gapChart').getContext('2d');
+        const gapChart = new Chart(gapCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Attendance', 'Homework Completion'],
+                datasets: [
+                    {
+                        label: 'Target',
+                        data: [80, 75],
+                        backgroundColor: 'rgba(200, 200, 200, 0.7)',
+                        borderColor: 'rgba(200, 200, 200, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Actual',
+                        data: [61, 54],
+                        backgroundColor: 'rgba(255, 159, 64, 0.7)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Rate (%)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Session Duration Chart
+        const durationCtx = document.getElementById('durationChart').getContext('2d');
+        const durationChart = new Chart(durationCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Minimum', 'Average', 'Maximum'],
+                datasets: [{
+                    label: 'Session Duration (minutes)',
+                    data: [1, 62.4, 138],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(75, 192, 192, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Duration (minutes)'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
